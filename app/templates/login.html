@@ -16,7 +16,7 @@
         {% if error %}
         <div class="alert alert-error">{{ error }}</div>
         {% endif %}
-        <form method="post" action="/">
+        <form method="post" action="{{ request.scope.get('root_path', '') }}/">
             <div class="form-group">
                 <label class="form-label" for="username">Username</label>
                 <input class="form-input" type="text" id="username" name="username" placeholder="Enter your username" required autofocus>

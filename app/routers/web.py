@@ -13,10 +13,14 @@ HARDCODED_USERNAME = "admin"
 HARDCODED_PASSWORD = "admin"
 
 
+def _prefix(request: Request) -> str:
+    return request.scope.get("root_path", "")
+
+
 @router.get("/", response_class=HTMLResponse)
 def login_page(request: Request):
     if request.session.get("authenticated"):
-        return RedirectResponse(url="/dashboard", status_code=302)
+        return RedirectResponse(url=f"{_prefix(request)}/dashboard", status_code=302)
     return templates.TemplateResponse("login.html", {"request": request})
 
 
@@ -24,7 +28,7 @@ def login_page(request: Request):
 def login(request: Request, username: str = Form(...), password: str = Form(...)):
     if username == HARDCODED_USERNAME and password == HARDCODED_PASSWORD:
         request.session["authenticated"] = True
-        return RedirectResponse(url="/dashboard", status_code=302)
+        return RedirectResponse(url=f"{_prefix(request)}/dashboard", status_code=303)
     return templates.TemplateResponse(
         "login.html", {"request": request, "error": "Invalid credentials"}
     )
@@ -33,7 +37,7 @@ def login(request: Request, username: str = Form(...), password: str = Form(...)
 @router.get("/dashboard", response_class=HTMLResponse)
 def dashboard(request: Request, db: Session = Depends(get_db)):
     if not request.session.get("authenticated"):
-        return RedirectResponse(url="/", status_code=302)
+        return RedirectResponse(url=f"{_prefix(request)}/", status_code=302)
     records = db.query(PhoneTI).order_by(PhoneTI.id.desc()).all()
     return templates.TemplateResponse(
         "dashboard.html", {"request": request, "records": records}
@@ -49,7 +53,7 @@ def insert_record(
     db: Session = Depends(get_db),
 ):
     if not request.session.get("authenticated"):
-        return RedirectResponse(url="/", status_code=302)
+        return RedirectResponse(url=f"{_prefix(request)}/", status_code=302)
     new_record = PhoneTI(
         phone_number=phone_number,
         ti_number=ti_number,
@@ -57,10 +61,10 @@ def insert_record(
     )
     db.add(new_record)
     db.commit()
-    return RedirectResponse(url="/dashboard", status_code=303)
+    return RedirectResponse(url=f"{_prefix(request)}/dashboard", status_code=303)
 
 
 @router.get("/logout")
 def logout(request: Request):
     request.session.clear()
-    return RedirectResponse(url="/", status_code=302)
+    return RedirectResponse(url=f"{_prefix(request)}/", status_code=302)

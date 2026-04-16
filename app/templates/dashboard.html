@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Dashboard - Phone TI{% endblock %}
 {% block nav_actions %}
-    <a href="/logout">
+    <a href="{{ request.scope.get('root_path', '') }}/logout">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
             <polyline points="16 17 21 12 16 7"/>
@@ -52,7 +52,7 @@
             </svg>
             Add New Record
         </div>
-        <form method="post" action="/dashboard">
+        <form method="post" action="{{ request.scope.get('root_path', '') }}/dashboard">
             <div class="grid-3">
                 <div class="form-group">
                     <label class="form-label" for="phone_number">Phone Number</label>

@@ -24,5 +24,9 @@ app = FastAPI(title="Phone TI Lookup")
 
 app.add_middleware(SessionMiddleware, secret_key="phone-ti-secret-key")
 
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
 app.include_router(api.router)
 app.include_router(web.router)
